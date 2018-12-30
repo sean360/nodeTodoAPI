@@ -1,6 +1,6 @@
 //set up mongo client
 //const MongoClient = require('mongodb').MongoClient;
-//desctrutioning
+//destructuring
 const {MongoClient, ObjectID} = require('mongodb');
 
 //connect to database
