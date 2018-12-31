@@ -31,5 +31,5 @@ app.listen(port, () => {
     console.log(`App is up and running on ${port}`);
 });
 
-
+module.exports = {app};
 
