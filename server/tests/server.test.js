@@ -1,13 +1,16 @@
 const expect = require('expect');
 const request = require('supertest');
+const ObjectID = require('mongodb').ObjectID;
 
 //local
-const {app} = require('./../server');
-const {Todo} = require('./../models/todo');
+const { app } = require('./../server');
+const { Todo } = require('./../models/todo');
 
 const todos = [{
+    _id: new ObjectID(),
     text: 'First test todo'
 }, {
+    _id: new ObjectID(),
     text: 'Second test todo'
 }];
 
@@ -23,22 +26,22 @@ describe('Post/todos', () => {
 
         request(app)
             .post('/todos')
-            .send({text})
+            .send({ text })
             .expect(200)
             .expect((res) => {
                 expect(res.body.text).toBe(text);
             })
             .end((err, res) => {
-                if (err){
+                if (err) {
                     return done(err);
                 }
 
-                Todo.find({text})
-                .then((todos) => {
-                    expect(todos.length).toBe(1);
-                    expect(todos[0].text).toBe(text);
-                    done();
-                }).catch((e) => done(e));
+                Todo.find({ text })
+                    .then((todos) => {
+                        expect(todos.length).toBe(1);
+                        expect(todos[0].text).toBe(text);
+                        done();
+                    }).catch((e) => done(e));
             });
     });
 
@@ -54,16 +57,16 @@ describe('Post/todos', () => {
             .expect(400)
             //tell it we are done and return the done method to complete the async call if there is a error
             .end((err, res) => {
-                if (err){
+                if (err) {
                     return done(err);
                 }
 
                 //if all worked there should not be any info in the database so we check the lengts of the returned object and again return done
                 Todo.find()
-                .then((todos) => {
-                    expect(todos.length).toBe(2);
-                    done();
-                }).catch((e) => done(e));
+                    .then((todos) => {
+                        expect(todos.length).toBe(2);
+                        done();
+                    }).catch((e) => done(e));
             });
     });
 });
@@ -77,5 +80,34 @@ describe('GET /todos', () => {
                 expect(res.body.todos.length).toBe(2);
             })
             .end(done)
-    })
-})
+    });
+});
+
+describe('Get /todos/:id', () => {
+    it('should return document with given id', (done) => {
+
+        request(app)
+            .get(`/todos/${todos[0]._id.toHexString()}`)
+            .expect(200)
+            .expect((res) => {
+                expect(res.body.todo.text).toBe(todos[0].text);
+            })
+            .end(done);
+    });
+
+    it('should return a 404 if to do not found', (done) => {
+        const id = new ObjectID().toHexString();
+        request(app)
+            .get(`/todos/${id}`)
+            .expect(404)
+            .end(done);
+    });
+
+    it('should return 404 for non object ids', (done) => {
+        request(app)
+            .get('/todos/5254832')
+            .expect(404)
+            .end(done)
+    });
+
+});
