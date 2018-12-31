@@ -1,6 +1,7 @@
 //Libraries
 const express = require('express');
 const bodyParser = require('body-parser');
+const ObjectID = require('mongodb').ObjectID;
 
 //Local Imports
 const {mongoose} = require('./db/mongoose');
@@ -19,7 +20,7 @@ app.post('/todos', (req, res) => {
     
     todo.save()
     .then((doc) => {
-        res.status(200).send(doc);
+        res.send(doc);
     }, (err) => {
         res.status(400).send(err);
     })
@@ -37,6 +38,26 @@ app.get('/todos', (req, res) => {
         res.send(err).status(400);
     });
 });
+
+//get todo by id
+app.get('/todos/:id', (req, res) => {
+   
+    const id = req.params.id;
+
+    if(!ObjectID.isValid(id)){
+        res.status(404).send();
+    }
+
+    Todo.findById(id)
+    .then((todo) => {
+        if (!todo){
+            res.status(404).send();
+        }
+        res.send({todo});
+    }, (err) => {
+        res.status(400).send(err);
+    });
+})
 
 //The Port to run
 const port = 3000;
