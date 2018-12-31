@@ -25,8 +25,23 @@ app.post('/todos', (req, res) => {
     })
 });
 
+//get all todos
+app.get('/todos', (req, res) => {
+    Todo.find()
+    .then((todos) => {
+        res.send({
+            todos,
+            result: 'success'
+        });
+    }, (err) => {
+        res.send(err).status(400);
+    });
+});
+
+//The Port to run
 const port = 3000;
 
+//start up server
 app.listen(port, () => {
     console.log(`App is up and running on ${port}`);
 });
