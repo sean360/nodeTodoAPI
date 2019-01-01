@@ -62,22 +62,22 @@ app.get('/todos/:id', (req, res) => {
 });
 
 app.delete('/todos/:id', (req, res) => {
-    
+
     const id = req.params.id;
 
-    if (!ObjectID.isValid(id)){
+    if (!ObjectID.isValid(id)) {
         return res.status(404).send('Invalid ID');
     }
 
     Todo.findByIdAndDelete(id)
-    .then((todo) => {
-        if (!todo) {
-            return res.status(404).send();
-        }
-        res.status(200).send({ todo });
-    }).catch((e) => {
-        res.send(e).status(400);
-    });
+        .then((todo) => {
+            if (!todo) {
+                return res.status(404).send();
+            }
+            res.status(200).send({ todo });
+        }).catch((e) => {
+            res.send(e).status(400);
+        });
 });
 
 app.patch('/todos/:id', (req, res) => {
@@ -85,12 +85,12 @@ app.patch('/todos/:id', (req, res) => {
 
     const body = _.pick(req.body, ['text', 'completed']);
 
-    if (!ObjectID.isValid(id)){
+    if (!ObjectID.isValid(id)) {
         return res.status(404).send('Invalid ID');
     }
 
     //update completed and completedAt
-    if (_.isBoolean(body.completed) && body.completed){
+    if (_.isBoolean(body.completed) && body.completed) {
         //set completedAT
         body.completedAt = new Date().getTime();
     } else {
@@ -98,15 +98,15 @@ app.patch('/todos/:id', (req, res) => {
         body.completedAt = null;
     }
 
-    Todo.findOneAndUpdate(id, {$set: body},{new: true})
-    .then((todo) => {
-        if (!todo) {
-            return res.status(404).send();
-        }
-        res.status(200).send({ todo });
-    }).catch((e) => {
-        res.send(e).status(400);
-    });
+    Todo.findOneAndUpdate(id, { $set: body }, { new: true })
+        .then((todo) => {
+            if (!todo) {
+                return res.status(404).send();
+            }
+            res.status(200).send({ todo });
+        }).catch((e) => {
+            res.send(e).status(400);
+        });
 });
 
 //start up server
