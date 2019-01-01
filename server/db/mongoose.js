@@ -1,11 +1,9 @@
 const mongoose = require('mongoose');
-
-const url = 'mongodb://localhost:27017';
-const database = 'TodoApp';
-
+const OPTS = { family: 4, useNewUrlParser: true, useFindAndModify: false };
 mongoose.Promise = global.Promise;
-mongoose.connect(process.env.MONGODB_URI || `${url}/${database}`, { useNewUrlParser: true });
+mongoose.connect(process.env.MONGODB_URI, OPTS );
 
 module.exports = {
     mongoose
 };
+

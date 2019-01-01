@@ -1,3 +1,4 @@
+require('./config/config');
 //Libraries
 const _ = require('lodash');
 const express = require('express');
@@ -12,7 +13,7 @@ const { User } = require('./models/user');
 const app = express();
 
 //The Port to run
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 
 app.use(bodyParser.json());
 
@@ -97,7 +98,7 @@ app.patch('/todos/:id', (req, res) => {
         body.completedAt = null;
     }
 
-    Todo.findByIdAndUpdate(id, {$set: body},{new: true})
+    Todo.findOneAndUpdate(id, {$set: body},{new: true})
     .then((todo) => {
         if (!todo) {
             return res.status(404).send();
