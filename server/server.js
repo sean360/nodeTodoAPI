@@ -10,6 +10,9 @@ const {User} = require('./models/user');
 
 const app = express();
 
+//The Port to run
+const port = process.env.PORT || 3000;
+
 app.use(bodyParser.json());
 
 //create a new todo
@@ -57,10 +60,7 @@ app.get('/todos/:id', (req, res) => {
     }, (err) => {
         res.status(400).send(err);
     });
-})
-
-//The Port to run
-const port = 3000;
+});
 
 //start up server
 app.listen(port, () => {
