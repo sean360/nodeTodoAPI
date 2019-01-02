@@ -9,6 +9,7 @@ const ObjectID = require('mongodb').ObjectID;
 const { mongoose } = require('./db/mongoose');
 const { Todo } = require('./models/todo');
 const { User } = require('./models/user');
+const { authenticate } = require('./middleware/authenticate');
 
 const app = express();
 
@@ -124,6 +125,10 @@ app.post('/users', (req, res) => {
     }).then((token) => {
         res.header('x-auth', token).send(user);
     }).catch((e) => res.send(e).status(400));
+});
+
+app.get('/users/me', authenticate, (req, res) => {
+    res.send(req.user);
 });
 
 //start up server

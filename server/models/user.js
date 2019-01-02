@@ -35,6 +35,8 @@ const UserSchema = new mongoose.Schema({
     }]
 });
 
+
+//instance method gets called with indiviual document
 UserSchema.methods.toJSON = function () {
     const user = this;
     const userObject = user.toObject();
@@ -52,6 +54,25 @@ UserSchema.methods.generateAuthToken = function () {
     return user.save()
     .then(() => {
         return token;
+    })
+};
+
+//model method gets called with the model(not the document) as the this binding
+UserSchema.statics.findByToken = function (token) {
+    
+    const User = this;
+    let decoded;
+
+    try {
+        decoded = jwt.verify(token, 'asdfasdf');
+    } catch (e) {
+        return Promise.reject();
+    }
+
+    return User.findOne({
+        '_id': decoded._id,
+        'tokens.token': token,
+        'tokens.access': 'auth'
     })
 }
 
