@@ -1,27 +1,62 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
+const jwt = require('jsonwebtoken');
+const _ = require('lodash');
 
-//setup the user model(the collection//table//)
-const User = mongoose.model('User',{
+const UserSchema = new mongoose.Schema({
     email: {
         type: String,
         trim: true,
         min: [1, 'that is not a valid email'],
         lowercase: true,
-        required: 'Email address is required',
-        match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
+        required: true,
+        unique: true,
+        validate: {
+            validator: validator.isEmail,
+            message: '{value} is not a valid email'
 
-    }
+        }
+    },
+    password: {
+        type: String,
+        trim: true,
+        min: [6, 'Password needs to be six characters or more'],
+        required: true 
+    },
+    tokens: [{
+        access:{
+            type: String,
+            required: true
+        },
+        token: {
+            type: String,
+            required: true
+        }
+    }]
 });
 
-// const newUser = new User({
-//     email: 'seankonigphotography@gmail.com'
-// });
+UserSchema.methods.toJSON = function () {
+    const user = this;
+    const userObject = user.toObject();
 
-// newUser.save()
-// .then((doc) => {
-//     console.log(`success: ${JSON.stringify(doc, undefined, 2)}`);
-// }, (e) => {
-//     console.log(e);
-// });
+    return _.pick(userObject, ['_id', 'email']);
+}
 
-module.exports = {User};
+UserSchema.methods.generateAuthToken = function () {
+    const user = this;
+    const access = 'auth';
+    const token = jwt.sign({_id: user._id.toHexString(), access}, 'asdfasdf').toString();
+
+    user.tokens = user.tokens.concat([{access, token}]);
+
+    return user.save()
+    .then(() => {
+        return token;
+    })
+}
+
+//setup the user model(the collection//table//)
+const User = mongoose.model('User', UserSchema);
+
+
+module.exports = { User };

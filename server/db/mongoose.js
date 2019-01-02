@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const OPTS = { family: 4, useNewUrlParser: true, useFindAndModify: false };
+const OPTS = { useNewUrlParser: true, useFindAndModify: false, useCreateIndex: true };
 mongoose.Promise = global.Promise;
 mongoose.connect(process.env.MONGODB_URI, OPTS );
 

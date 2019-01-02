@@ -109,6 +109,23 @@ app.patch('/todos/:id', (req, res) => {
         });
 });
 
+app.post('/users', (req, res) => {
+
+    const body = _.pick(req.body, ['email', 'password']);
+
+    const user = new User({
+        email: body.email,
+        password: body.password
+    });
+
+    user.save()
+    .then(() => {
+        return user.generateAuthToken();
+    }).then((token) => {
+        res.header('x-auth', token).send(user);
+    }).catch((e) => res.send(e).status(400));
+});
+
 //start up server
 app.listen(port, () => {
     console.log(`App is up and running on ${port}`);
